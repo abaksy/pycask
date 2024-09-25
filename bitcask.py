@@ -8,7 +8,7 @@ class BitCaskDataStore:
     def __init__(self, datafile_name="database.db") -> None:
         self.datafile = datafile_name
         if not os.path.exists(self.datafile):
-            with open(self.datafile, 'x') as f:
+            with open(self.datafile, "x") as f:
                 pass
         self.keydir: Dict[str, BitCaskKeyDirEntry] = dict()
 
@@ -19,7 +19,7 @@ class BitCaskDataStore:
             return ""
         offset_info = self.keydir[key]
         file_offset = offset_info.offset
-        with open(self.datafile, 'rb') as f:
+        with open(self.datafile, "rb") as f:
             f.seek(file_offset)
             byte_data = f.read(16)
             timestamp, keysize, valuesize = struct.unpack("<QLL", byte_data)
@@ -27,7 +27,6 @@ class BitCaskDataStore:
             key_bytes = f.read(keysize)
             value_bytes = f.read(valuesize)
             print(key_bytes, value_bytes)
-
 
     def put(self, key, value):
         # Insert a key-value pair into the bitcask database
@@ -41,7 +40,7 @@ class BitCaskDataStore:
         # Append the key-value to the disk store now
         diskstore = BitCaskDiskStore(key, value)
         byte_data = diskstore.encode()
-        with open(self.datafile, 'ab') as f:
+        with open(self.datafile, "ab") as f:
             f.write(byte_data)
 
     def list_keys(self):
@@ -55,4 +54,3 @@ class BitCaskDataStore:
 
     def close(self):
         self.file_handle.close()
-       
