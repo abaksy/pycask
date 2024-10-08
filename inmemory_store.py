@@ -16,8 +16,8 @@ class BitCaskDiskStore:
     def __init__(self, key, value) -> None:
         ms = datetime.now()
         self.timestamp = int(time.mktime(ms.timetuple()) * 1000)
-        self.key = key
-        self.value = value
+        self.key = str(key)
+        self.value = str(value)
         self.keysize = len(key)
         self.valuesize = len(value)
 
