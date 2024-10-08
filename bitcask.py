@@ -43,13 +43,14 @@ class BitCaskDataStore:
     def list_keys(self):
         return list(self.keydir.keys())
 
-    def merge(self):
-        pass
-
     def sync(self):
-        pass
+        # Flush OS file buffers to disk to 
+        # persist pending writes to disk
+        self.file_handle.flush()
+        os.fsync(self.file_handle)
 
     def close(self):
+        # Flush pending writes to disk and close file handle
         self.file_handle.flush()
         os.fsync(self.file_handle)
         self.file_handle.close()
