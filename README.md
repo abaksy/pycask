@@ -1,6 +1,8 @@
 # pycask
 A log-structured disk-based key-value store in Python for educational purposes
 
+This is an implementation of the BitCask database described in [this paper](https://riak.com/assets/bitcask-intro.pdf)
+
 ## Usage Guide
 
 ```python
