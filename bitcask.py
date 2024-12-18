@@ -9,6 +9,21 @@ class BitCaskDataStore:
         self.datafile = datafile_name
         self.file_handle =  open(self.datafile, "a+b")
         self.keydir: Dict[str, BitCaskKeyDirEntry] = dict()
+        self.build_keydir()
+    
+    def build_keydir(self):
+        filesize = os.path.getsize(self.datafile)
+        if filesize == 0:
+            return 
+        with open(self.datafile, 'rb') as f:
+            while f.tell() < filesize:
+                offset = f.tell()
+                byte_data = f.read(16)
+                timestamp, keysize, valuesize = struct.unpack("<QLL", byte_data)
+                key = f.read(keysize).decode()
+                value = f.read(valuesize).decode()
+                self.keydir[key] = BitCaskKeyDirEntry(valuesize, offset)
+            
 
     def get(self, key):
         """
