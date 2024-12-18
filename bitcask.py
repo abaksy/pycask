@@ -1,4 +1,4 @@
-from inmemory_store import BitCaskKeyDirEntry, BitCaskDiskStore
+from inmemory_store import BitCaskKeyDirEntry, BitCaskKVPair
 import os
 from typing import Dict
 import struct
@@ -11,8 +11,11 @@ class BitCaskDataStore:
         self.keydir: Dict[str, BitCaskKeyDirEntry] = dict()
 
     def get(self, key):
-        # Get the offset information from the keydir
-        # Use the offset info to read the key and the value from the data file
+        """
+        Get the offset information from the keydir
+        Use the offset info to read the key and the value from the data file
+        """
+
         if key not in self.keydir:
             return ""
         offset_info = self.keydir[key]
@@ -26,7 +29,10 @@ class BitCaskDataStore:
         return value_bytes.decode()
 
     def put(self, key, value):
-        # Insert a key-value pair into the bitcask database
+        """
+        Insert a key-value pair into the bitcask database
+        """
+        
         # First, insert the key-value into the in-memory keydir
         valsize = len(value)
 
@@ -35,22 +41,29 @@ class BitCaskDataStore:
         self.keydir[key] = kdEntry
 
         # Append the key-value to the disk store now
-        diskstore = BitCaskDiskStore(key, value)
+        diskstore = BitCaskKVPair(key, value)
         byte_data = diskstore.encode()
         with open(self.datafile, "ab") as f:
             f.write(byte_data)
 
     def list_keys(self):
+        """
+        List all keys in the datastore
+        """
         return list(self.keydir.keys())
 
     def sync(self):
-        # Flush OS file buffers to disk to 
-        # persist pending writes to disk
+        """
+        Flush OS file buffers to disk to 
+        persist pending writes to disk
+        """
         self.file_handle.flush()
         os.fsync(self.file_handle)
 
     def close(self):
-        # Flush pending writes to disk and close file handle
+        """
+        Flush pending writes to disk and close file handle
+        """
         self.file_handle.flush()
         os.fsync(self.file_handle)
         self.file_handle.close()
